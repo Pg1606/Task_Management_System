@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 
-import './task.css';
-
+import '../task/task.css';
 const CreateNewTask = ({addTask, editTask}) => {
 
   const [taskName, setTaskName] = useState('');

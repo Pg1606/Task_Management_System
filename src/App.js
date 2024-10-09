@@ -1,7 +1,7 @@
 import './App.css';
 import React, {useState, useEffect} from 'react';
-import CreateNewTask from './task';
-import TaskList from './taskList';
+import CreateNewTask from './components/task/task';
+import TaskList from './components/taskList/taskList';
 
 const App = ()  => {
   const [flag, setFlag] = useState(false);
