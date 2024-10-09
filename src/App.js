@@ -1,25 +1,78 @@
-import logo from './logo.svg';
 import './App.css';
+import React, {useState, useEffect} from 'react';
+import CreateNewTask from './task';
+import TaskList from './taskList';
 
-function App() {
+const App = ()  => {
+  const [flag, setFlag] = useState(false);
+  const [tasks, setTasks] = useState([]);
+  const [editTask, setEditTask] = useState(null);
+
+  const saveToStorage = (updatedTasks) => {
+    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+  }
+
+  useEffect(() => {
+    const storedTasks = localStorage.getItem('tasks');
+    if (storedTasks) {
+      setTasks(JSON.parse(storedTasks));
+    }
+  }, []);
+
+  const deleteTask = (index) => {
+    const updatedTasks = tasks.filter((_, i) => i !== index);
+    setTasks(updatedTasks);
+    saveToStorage(updatedTasks);
+  };
+
+  const addTask = (newTask) => {
+    if(editTask) {
+      const updatedTask = tasks.map(
+        (task) => task.taskName === editTask.taskName ? newTask : task
+      );
+      setTasks(updatedTask);
+      saveToStorage(updatedTask);
+      setEditTask(null);
+    }
+    else {
+      setTasks((prevTasks) => {
+        const updatedTasks = [...prevTasks, newTask];
+        saveToStorage(updatedTasks);
+        return updatedTasks;
+      });
+    }
+  }
+
+  const handleEditTask = (task) => {
+    setEditTask(task);
+    setFlag(true);
+  }
+
+  const clearTasks = () => {
+    setTasks([]);
+    localStorage.removeItem('tasks'); // Clear local storage
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className='app-container'>
+      <div>
+        <h1 className='title'>Task Management System</h1>
+        <button className='add-btn' onClick={() => setFlag(!flag)}>
+          {flag ? 'Cancel' : 'Add Task'}
+        </button>
+        {
+          flag && <CreateNewTask addTask={addTask} editTask={editTask} />
+        }
+      </div>
+
+      <div>
+        <TaskList tasks={tasks} onEdit={handleEditTask} deleteTask={deleteTask} />
+      </div>
+      <div>
+        <button className='clear-btn' onClick={clearTasks}>Clear All Tasks</button>
+      </div>
     </div>
   );
-}
+};
 
 export default App;
